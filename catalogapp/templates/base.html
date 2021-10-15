@@ -1,0 +1,159 @@
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Catalog of equipment</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Bootstrap icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+        <script>
+            var myModal = document.getElementById('exampleModal')
+            var myInput = document.getElementById('myInput')
+
+            myModal.addEventListener('shown.bs.modal', function () {
+                myInput.focus()
+            })
+        </script>
+
+    </head>
+
+
+
+    <body>
+        <!-- Navigation-->
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+            <div class="container px-4 px-lg-5">
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Categories
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            {% for category in categories %}
+                            <a class="dropdown-item" href="{{ category.get_abs_url }}">{{ category.name}}</a>
+                            {% endfor %}
+                        </div>
+                    </li>
+                {% if not request.user.is_authenticated %}
+                    <li>
+                        <a class="nav-link text-dark" href="{% url 'login' %}">Authorization</a>
+                    </li>
+                    <li>
+                        <a class="nav-link text-dark" href="{% url 'registration' %}">Registration</a>
+                    </li>
+                {% endif%}
+                    <li class="nav-item">
+                        {% if request.user.is_authenticated %}<span class="navbar text text-dark">Hello,<span class="badge badge-danger">
+                        <a style="text-decoration: none; font-size:14px; color:black" href="{% url 'profile' %}">{{ request.user.username }}</a>
+                         </span>! | <a href="{% url 'logout' %}" style="color:black; text-decoration:None;">Log out</a></span>{% endif %}
+                    </li>
+                </ul>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <form class="d-flex">
+                        <button class="btn btn-outline-dark" type="submit">
+                            <a class="bi-cart-fill me-1" href="{% url 'selection' %}">
+                            Selected Items
+                            <span class="badge bg-dark text-white ms-1 rounded-pill">{{ selection.products.count }}</span></a>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Header-->
+        <header class="bg-dark py-6">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="text-center text-white">
+                    <h1 class="display-4 fw-bolder">Catalog of equipment</h1>
+                    <p class="lead fw-normal text-white-50 mb-2">for heating</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="container px-4 px-lg-5">
+
+            <div class="row">
+
+                <div class="col-lg-3">
+
+                    <div class="list-group">
+                        {% for category in categories %}
+                        <a href="{{ category.url }}" class="list-group-item">{{ category.name }} ({{ category.count }})</a>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Section-->
+        <section class="py-5">
+            <div class="container px-4 px-lg-5 mt-5">
+                {% block content %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                          <strong>{{ message }}</strong>
+                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                    {% for product in products %}
+                    <div class="col mb-5">
+                        <div class="card h-100">
+                            <a href="{{ product.get_abs_url }}">
+                                <!-- Product image-->
+                                <img class="card-img-top" src="{{ product.image.url }}" alt="..." />
+                            </a>
+                            <!-- Product details-->
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <!-- Product name-->
+                                    <h5 class="fw-bolder">
+                                        <a href="{{ product.get_abs_url }}">{{ product.name }}</a>
+                                    </h5>
+                                    <!-- Product final_price-->
+                                    <h5>${{ product.price}}</h5>
+                                    <a href="{% url 'add_to_selection'  slug=product.slug %}">
+                                        <button type="button" class="btn btn-danger">Add to selection</button>
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- Product actions-->
+                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endblock content %}
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="py-5 bg-dark">
+            <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Your Website 2021</p></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+
+    </body>
+
+</html>

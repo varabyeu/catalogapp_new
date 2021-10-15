@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h7 class="text-left ml-5 mb-5"><a href="{% url 'base' %}">Back to Main page</a></h7>
+<h3 class="text-center mt-5 mb-5">Your selection {% if not selection.products.count %} is empty {% endif %}</h3>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <strong>{{ message }}</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+{% if selection.products.count %}
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Products data</th>
+      <th scope="col">Image</th>
+      <th scope="col">Price</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Total Price</th>
+      <th scope="col">Actions</th>
+  </thead>
+  <tbody>
+    {% for item in selection.products.all %}
+        <tr>
+            <th scope="row">{{ item.content_object.name }}</th>
+            <td class="w-25"><img src="{{ item.product.image.url }}" class="image-fluid"></td>
+            <td>${{ item.content_object.price }}</td>
+            <td>
+                <form action="{% url 'change_qty'  slug=item.product.slug %}" method="POST">
+                    {% csrf_token %}
+                    <input type="number" class="form-control" name="qty" min="1" value="{{ item.qty }}">
+                    <br>
+                    <input type="submit" class="btn btn-primary" value="Change quantity">
+                </form>
+            </td>
+            <td>${{ item.final_price }}</td>
+            <td>
+                <a href="{% url 'remove_from_selection' slug=item.product.slug %}">
+                <button class="btn btn-danger">Remove from selection</button>
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
+        <tr colspan="2"></tr>
+        <td>Total</td>
+        <td></td>
+        <td></td>
+        <td>{{ selection.total_products }}</td>
+        <td><strong>${{ selection.final_price }}</strong></td>
+        <td><a href="{% url 'checkout' %}">
+            <button class="btn btn-primary">Go to order</button>
+        </a></td>
+  </tbody>
+</table>
+{% endif %}
+{% endblock content %}
